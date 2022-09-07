@@ -5,12 +5,10 @@ import pandas as me
 import time
 from webdriver_manager.chrome import ChromeDriverManager
 
-def scrape_info():
+def scrape():
     # splinter setup
     executable_path = {'executable_path': ChromeDriverManager().install()}
     browser = Browser('chrome', **executable_path, headless=False)
-
-def scrape():
     # mars news site
     url = 'https://redplanetscience.com/'
     browser.visit(url)
@@ -39,38 +37,35 @@ def scrape():
 
     # mars facts, using pandas to scrape mars facts
     facts_url = 'https://galaxyfacts-mars.com'
-    mars_df = me.read_html(facts_url)[1]
-    mars_df.columns = ['description', 'value']
-    mars_df = mars_df.set_index('description')
+    browser.visit(facts_url)
+    mars_df = me.read_html(facts_url)
+    mars_df = me.DataFrame(mars_df[1])
+    mars_df.columns = ['Planet Info', '']
+    mars_df.set_index('Planet Info', inplace=True)
     # convert table to html
-    mars_table = mars_df.to_html(classes='data table', index=False, header=False, border=1)
+    mars_table = mars_df.to_html(index=True, header=True)
 
     # site for mars hemispheres
     hemi_url = 'https://marshemispheres.com/'
     browser.visit(hemi_url)
-    # setup parse
-    html = browser.html
-    hemis = soup(html, 'html.parser')
-    time.sleep(1)
     # create a list to hold images and titles
     hemi_img_urls = []
-
     # loop through each image and add to dictionary list
-    # results = soup.find_all('div', class_='item')
-    for result in range(4):
+    for hemis in range(4):
         # go through each article to get wanted information
-        browser.links.find_by_partial_text('Hemisphere')[result].click()
+        browser.links.find_by_partial_text('Hemisphere')[hemis].click()
         # parse
         html = browser.html
-        hemis = soup(html, 'html.parser')
+        hemi_soup = soup(html, 'html.parser')
         # scrape
-        title = hemis.find('h2', class_='title').text
-        hemi_url = hemis.find('li').a.get('href')
+        title = hemi_soup.find('h2', class_='title').text
+        hemi_url = hemi_soup.find('li').a.get('href')
         # store results into a dictionary and append to the list
         hemispheres = {}
         hemispheres['title'] = title
         hemispheres['img_url'] = f'https://marshemispheres.com/{hemi_url}'
         hemi_img_urls.append(hemispheres)
+        browser.back()
 
     # crate dictionary to store retrieved data
     mars_info = {
