@@ -5,9 +5,10 @@ import pandas as me
 import time
 from webdriver_manager.chrome import ChromeDriverManager
 
-# setup splinter
-executable_path = {'executable_path': ChromeDriverManager().install()}
-browser = Browser('chrome', **executable_path, headless=False)
+def scrape_info():
+    # splinter setup
+    executable_path = {'executable_path': ChromeDriverManager().install()}
+    browser = Browser('chrome', **executable_path, headless=False)
 
 def scrape():
     # mars news site
