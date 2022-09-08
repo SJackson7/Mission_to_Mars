@@ -39,8 +39,8 @@ def scrape():
     facts_url = 'https://galaxyfacts-mars.com'
     browser.visit(facts_url)
     mars_df = me.read_html(facts_url)
-    mars_df = me.DataFrame(mars_df[1])
-    mars_df.columns = ['Planet Info', '']
+    mars_df = me.DataFrame(mars_df[0])
+    mars_df.columns = ['Planet Info', '', '']
     mars_df.set_index('Planet Info', inplace=True)
     # convert table to html
     mars_table = mars_df.to_html(index=True, header=True)
